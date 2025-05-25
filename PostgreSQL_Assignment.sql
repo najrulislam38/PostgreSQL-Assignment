@@ -1,20 +1,28 @@
 -- Active: 1747539716704@@localhost@5432@conservation_db
+-- Create rangers table
 CREATE TABLE rangers (
     ranger_id SERIAL PRIMARY KEY,
     "name" VARCHAR(50) NOT NULL,
     region VARCHAR(100) NOT NULL
 );
 
+-- Create species table
 CREATE TABLE species (
     species_id SERIAL PRIMARY KEY,
     common_name VARCHAR(50) NOT NULL,
     scientific_name VARCHAR(100),
     discovery_date DATE NOT NULL,
     conservation_status TEXT CHECK (
-        conservation_status IN ('Endangered', 'Vulnerable')
+        conservation_status IN (
+            'Endangered',
+            'Vulnerable',
+            'Historic',
+            'Critical'
+        )
     )
 );
 
+-- Create sightings table
 CREATE TABLE sightings (
     sighting_id SERIAL PRIMARY KEY,
     ranger_id INT REFERENCES rangers (ranger_id) NOT NULL,
@@ -108,8 +116,6 @@ VALUES (
         NULL
     );
 
--- DROP TABLE sightings;
-
 --  Problem 1
 INSERT INTO
     rangers ("name", region)
@@ -159,34 +165,29 @@ LIMIT 2;
 -- Problem 7 Not complete -confusion
 UPDATE species
 SET
-    "status" = 'Historic'
+    conservation_status = 'Historic'
 WHERE
     EXTRACT(
         YEAR
         FROM discovery_date
-    ) > 1800;
-
-SELECT * FROM rangers;
-
-SELECT * FROM species;
-
-SELECT * FROM sightings;
+    ) < 1800;
 
 -- Problem 8
-CREATE Function get_time_of_day(d_time TIME)
-RETURNS TEXT
-LANGUAGE PLPGSQL
-AS
-$$
- BEGIN
 
- IF d_time >
-
- END;
-
-$$
-
-SELECT sighting_id FROM sightings;
+SELECT
+    sighting_id,
+    CASE
+        WHEN EXTRACT(
+            HOUR
+            FROM sighting_time
+        ) < 12 THEN 'Morning'
+        WHEN EXTRACT(
+            HOUR
+            FROM sighting_time
+        ) BETWEEN 12 AND 17  THEN 'Afternoon'
+        ELSE 'Evening'
+    END
+FROM sightings;
 
 -- Problem 9
 DELETE FROM rangers
