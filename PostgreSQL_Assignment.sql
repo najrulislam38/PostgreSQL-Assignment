@@ -101,17 +101,97 @@ VALUES (
         'Feeding observed'
     ),
     (
-        1,
         2,
+        1,
         '2024-05-18 18:30:00',
         'Snowfall Pass',
         NULL
     );
 
-DROP TABLE sightings;
+-- DROP TABLE sightings;
+
+--  Problem 1
+INSERT INTO
+    rangers ("name", region)
+VALUES ('Derek Fox', 'Coastal Plains');
+
+-- Problem 2
+
+SELECT COUNT(*) as unique_species_count
+FROM (
+        SELECT species_id
+        FROM species
+            JOIN sightings using (species_id)
+        GROUP BY
+            species_id
+    );
+
+-- Problem 3
+SELECT * FROM sightings WHERE "location" LIKE ('%Pass');
+
+-- problem 4
+SELECT "name", count(*) as total_sightings
+FROM rangers
+    JOIN sightings USING (ranger_id)
+GROUP BY
+    ranger_id;
+
+-- Problem 5
+SELECT common_name
+FROM species
+WHERE
+    species_id NOT in (
+        SELECT species_id
+        from sightings
+    );
+
+-- Problem 6
+SELECT
+    common_name,
+    sighting_time,
+    "name"
+FROM sightings
+    JOIN species USING (species_id)
+    INNER JOIN rangers USING (ranger_id)
+ORDER BY sighting_time DESC
+LIMIT 2;
+
+-- Problem 7 Not complete -confusion
+UPDATE species
+SET
+    "status" = 'Historic'
+WHERE
+    EXTRACT(
+        YEAR
+        FROM discovery_date
+    ) > 1800;
 
 SELECT * FROM rangers;
 
 SELECT * FROM species;
 
 SELECT * FROM sightings;
+
+-- Problem 8
+CREATE Function get_time_of_day(d_time TIME)
+RETURNS TEXT
+LANGUAGE PLPGSQL
+AS
+$$
+ BEGIN
+
+ IF d_time >
+
+ END;
+
+$$
+
+SELECT sighting_id FROM sightings;
+
+-- Problem 9
+DELETE FROM rangers
+WHERE
+    ranger_id NOT IN (
+        SELECT ranger_id
+        FROM sightings
+    );
