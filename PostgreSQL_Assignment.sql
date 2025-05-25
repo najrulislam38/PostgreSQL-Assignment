@@ -116,6 +116,12 @@ VALUES (
         NULL
     );
 
+SELECT * FROM rangers;
+
+SELECT * FROM species;
+
+SELECT * FROM sightings;
+
 --  Problem 1
 INSERT INTO
     rangers ("name", region)
